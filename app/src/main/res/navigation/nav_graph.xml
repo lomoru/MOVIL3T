@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/pokeFragment">
+
+    <fragment
+        android:id="@+id/pokeFragment"
+        android:name="com.example.movil3t.pokeFragment"
+        android:label="fragment_poke"
+        tools:layout="@layout/fragment_poke" />
+    <fragment
+        android:id="@+id/pokcapFragment"
+        android:name="com.example.movil3t.pokcapFragment"
+        android:label="fragment_pokcap"
+        tools:layout="@layout/fragment_pokcap" />
+    <fragment
+        android:id="@+id/ajusFragment"
+        android:name="com.example.movil3t.ajusFragment"
+        android:label="fragment_ajus"
+        tools:layout="@layout/fragment_ajus" />
+</navigation>
