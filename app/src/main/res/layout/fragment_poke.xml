@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".pokeFragment">
 
-    <TextView
-        android:id="@+id/textinidos"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pokedex_recy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </FrameLayout>
