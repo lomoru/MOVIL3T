@@ -1,6 +1,8 @@
 package com.example.movil3t;
 
 import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -77,10 +79,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
 
-
-
-
+    public void pokeClicked(Pokemon poke, View view){
 
     }
 }
