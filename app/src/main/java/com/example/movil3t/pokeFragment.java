@@ -20,9 +20,14 @@ import com.example.movil3t.databinding.ItemPokemonBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class pokeFragment extends Fragment {
 
     private FragmentPokeBinding binding;
+    private PokemonAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,26 +40,53 @@ public class pokeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Crear lista de nombres de Pokémon
-        List<String> pokemonList = getPokemonList();
+        List<String> pokemonList = new ArrayList<>();
 
         // Configurar el RecyclerView
-        PokemonAdapter adapter = new PokemonAdapter(pokemonList);
+        adapter = new PokemonAdapter(pokemonList);
         binding.pokedexRecy.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.pokedexRecy.setAdapter(adapter);
+
+        //llenar de nombres
+        fetchPokemonData();
     }
 
-    private List<String> getPokemonList() {
-        List<String> pokemonList = new ArrayList<>();
-        for (int i = 1; i <= 25; i++) {
-            pokemonList.add("Pokémon " + i);
-        }
-        return pokemonList;
+    //Clase para llamar a la api y obtener los datos
+    private void fetchPokemonData() {
+        // Crear instancia del servicio Retrofit
+        PokemonApiService apiService = RetrofitClient.getRetrofitInstance().create(PokemonApiService.class);
+        Call<PokemonResponse> call = apiService.getPokemonList();
+
+        // Realizar la llamada asincrónica
+        call.enqueue(new Callback<PokemonResponse>() {
+            @Override
+            public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<PokemonResponse.PokemonName> pokemonList = response.body().getResults();
+                    List<String> pokemonNames = new ArrayList<>();
+                    for (PokemonResponse.PokemonName pokemon : pokemonList) {
+                        pokemonNames.add(pokemon.getName());
+                    }
+                    // Actualizar el adaptador con los nombres obtenidos
+                    adapter.updateData(pokemonNames);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PokemonResponse> call, Throwable t) {
+                // Manejar errores
+                t.printStackTrace();
+            }
+        });
     }
+
+
 
     // Clase interna para el adaptador
     private static class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
 
         private final List<String> pokemonList;
+
 
         public PokemonAdapter(List<String> pokemonList) {
             this.pokemonList = pokemonList;
@@ -81,6 +113,15 @@ public class pokeFragment extends Fragment {
         public int getItemCount() {
             return pokemonList.size();
         }
+
+        // Método para actualizar los datos del adaptador
+        public void updateData(List<String> newPokemonList) {
+            pokemonList.clear();
+            pokemonList.addAll(newPokemonList);
+            notifyDataSetChanged(); // Notificar al adaptador que los datos han cambiado
+        }
+
+
 
         //clase interna para el viewHolder
         static class PokemonViewHolder extends RecyclerView.ViewHolder {
