@@ -21,8 +21,12 @@ public class PokemonResponse {
         @SerializedName("name")
         private String name;
 
-        public PokemonName(String name) {
+        @SerializedName("url")
+        private String url;
+
+        public PokemonName(String name, String url) {
             this.name = name;
+            this.url = url;
         }
 
         public String getName() {
@@ -31,6 +35,14 @@ public class PokemonResponse {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 }

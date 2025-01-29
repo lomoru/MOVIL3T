@@ -14,8 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+
 import com.example.movil3t.databinding.FragmentPokeBinding;
 import com.example.movil3t.databinding.ItemPokemonBinding;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +41,8 @@ public class pokeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Crear lista de nombres de Pokémon
-        List<String> pokemonList = new ArrayList<>();
+        // Crear lista de objetos Pokémon sacados de la API
+        List<PokemonResponse.PokemonName> pokemonList = new ArrayList<>();
 
         // Configurar el RecyclerView
         adapter = new PokemonAdapter(pokemonList);
@@ -57,18 +59,15 @@ public class pokeFragment extends Fragment {
         PokemonApiService apiService = RetrofitClient.getRetrofitInstance().create(PokemonApiService.class);
         Call<PokemonResponse> call = apiService.getPokemonList();
 
-        // Realizar la llamada asincrónica
+        // Realizar la llamada
         call.enqueue(new Callback<PokemonResponse>() {
             @Override
             public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<PokemonResponse.PokemonName> pokemonList = response.body().getResults();
-                    List<String> pokemonNames = new ArrayList<>();
-                    for (PokemonResponse.PokemonName pokemon : pokemonList) {
-                        pokemonNames.add(pokemon.getName());
-                    }
-                    // Actualizar el adaptador con los nombres obtenidos
-                    adapter.updateData(pokemonNames);
+
+                    // Actualizar el adaptador con los objetos obtenidos
+                    adapter.updateData(pokemonList);
                 }
             }
 
@@ -85,10 +84,10 @@ public class pokeFragment extends Fragment {
     // Clase interna para el adaptador
     private static class PokemonAdapter extends RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder> {
 
-        private final List<String> pokemonList;
+        private final List<PokemonResponse.PokemonName> pokemonList;
 
 
-        public PokemonAdapter(List<String> pokemonList) {
+        public PokemonAdapter(List<PokemonResponse.PokemonName> pokemonList) {
             this.pokemonList = pokemonList;
         }
 
@@ -104,10 +103,18 @@ public class pokeFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull PokemonViewHolder holder, int position) {
-            String pokemonName = pokemonList.get(position);
-            holder.binding3.pokemonName.setText(pokemonName);
+            PokemonResponse.PokemonName pokemonName=pokemonList.get(position);
+            holder.binding.pokemonName.setText(pokemonName.getName());
+
+            holder.itemView.setOnClickListener(v -> {
+                System.out.println("boton pulsado "+pokemonName.getName());
+                Snackbar.make(v, "URL: " + pokemonName.getUrl(), Snackbar.LENGTH_LONG).show();
+
+            });
 
         }
+
+
 
         @Override
         public int getItemCount() {
@@ -115,7 +122,7 @@ public class pokeFragment extends Fragment {
         }
 
         // Método para actualizar los datos del adaptador
-        public void updateData(List<String> newPokemonList) {
+        public void updateData(List<PokemonResponse.PokemonName> newPokemonList) {
             pokemonList.clear();
             pokemonList.addAll(newPokemonList);
             notifyDataSetChanged(); // Notificar al adaptador que los datos han cambiado
@@ -125,11 +132,11 @@ public class pokeFragment extends Fragment {
 
         //clase interna para el viewHolder
         static class PokemonViewHolder extends RecyclerView.ViewHolder {
-            private final ItemPokemonBinding binding3;
+            private final ItemPokemonBinding binding;
 
-            public PokemonViewHolder(ItemPokemonBinding binding3) {
-                super(binding3.getRoot());
-                this.binding3 = binding3;
+            public PokemonViewHolder(ItemPokemonBinding binding) {
+                super(binding.getRoot());
+                this.binding = binding;
 
             }
         }
